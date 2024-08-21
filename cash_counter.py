@@ -3,12 +3,13 @@ from ultralytics import YOLO
 import supervision as sv
 
 # Load image and model
-image = cv2.imread('IMG_8086.jpg')
-model = YOLO('best.pt')
+image = cv2.imread('PATH_TO_IMAGE')
+model = YOLO('PATH_TO_BEST_PT_FILE')
 results = model.predict(image)
-# detections = sv.Detections.from_ultralytics(results)
+
 names = model.names
 print(names)
+
 # Denominations and their values
 denominations = {
     'Penny': 0.01,
@@ -39,19 +40,13 @@ total_value = sum(denominations[name] * count for name, count in denomination_co
 
 print(f"Total Dollar Amount: ${total_value:.2f}")
 
+detections = sv.Detections.from_ultralytics(results)
 
-# # bounding_box_annotator = sv.BoundingBoxAnnotator()
-# annotated_frame = bounding_box_annotator.annotate(
-# scene=image.copy(),
-# detections=detections)
-
-# annotated_frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-
-# Convert the NumPy array (image) to a PIL Image
-# from PIL import Image
-# pil_image = Image.fromarray(annotated_frame_rgb)
-
-# # Display the PIL image
-# pil_image.show()
+bounding_box_annotator = sv.BoundingBoxAnnotator()
+    annotated_frame = bounding_box_annotator.annotate(
+    scene=image.copy(),
+    detections=detections)
+cv2.putText(annotated_frame, f"You have ${total_value}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+sv.plot(annotated_frame, (12,12))
 
 # model.predict(source=0, show = True, conf = 0.8)
